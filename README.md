@@ -9,7 +9,7 @@ Visual Studio Code's extension for arcaea visual novel script (.vns) file's read
 - .vns File Inspection
   - [x] .vns File Parsing
   - [x] Basic Value Check
-  - [] File Usage Check for Image and Music
-- [] IntelliSense Supports
+  - [ ] File Usage Check for Image and Music
+- [ ] IntelliSense Supports
 
 **Enjoy!**
