@@ -1,0 +1,53 @@
+{
+	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+	"name": "Arcaea Visual Novel Script",
+	"patterns": [
+		{
+			"include": "#keywords"
+		},
+		{
+			"include": "#strings"
+		},
+		{
+			"include": "#numbers"
+		}
+	],
+	"repository": {
+		"keywords": {
+			"patterns": [
+				{
+					"name": "keyword.control.vns",
+					"match": "^(show|hide|move|play|stop|volume|say|wait|auto|scale)\\b"
+				},
+				{
+					"name": "entity.name.function.vns",
+					"match": "\\bfade\\b"
+				},
+				{
+					"name": "constant.character.vns",
+					"match": "\\b(sine|cubic|ease)(in)?(out)?|loop|linear|normal|overlay|clear| scale\\b"
+				}
+			]
+		},
+		"strings": {
+			"name": "string.quoted.double.vns",
+			"begin": "\"",
+			"end": "\"",
+			"patterns": [
+				{
+					"name": "constant.character.escape.vns",
+					"match": "\\\\."
+				}
+			]
+		},
+		"numbers": {
+			"patterns": [
+				{
+					"name": "constant.numeric.vns",
+					"match": "-?(0|[1-9]\\d*)(.\\d+)?"
+				}
+			]
+		}
+	},
+	"scopeName": "source.arcaea-visualnovel"
+}

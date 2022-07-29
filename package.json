@@ -1,0 +1,76 @@
+{
+    "name": "arcaea-vns-support",
+    "displayName": "Arcaea Visual Novel Script Support",
+    "description": "",
+    "version": "0.0.1",
+    "engines": {
+        "vscode": "^1.69.0"
+    },
+    "categories": [
+        "Other"
+    ],
+    "activationEvents": [
+        "onLanguage:arcaea-visualnovel"
+    ],
+    "main": "./client/out/extension",
+    "contributes": {
+        "languages": [
+            {
+                "id": "arcaea-visualnovel",
+                "aliases": [
+                    "Arcaea Visual Novel Script",
+                    "Visual Novel Script",
+                    "arcaea-vns",
+                    "vns"
+                ],
+                "extensions": [
+                    ".vns"
+                ],
+                "configuration": "./language-configuration.json"
+            }
+        ],
+        "grammars": [
+            {
+                "language": "arcaea-visualnovel",
+                "scopeName": "source.arcaea-visualnovel",
+                "path": "./syntaxes/arcaea-visualnovel.tmLanguage.json"
+            }
+        ],
+        "snippets": [
+            {
+                "language": "arcaea-visualnovel",
+                "path": "./snippets.json"
+            }
+        ],
+        "configuration": [
+            {
+                "title": "Arcaea Visual Novel Script",
+                "properties": {
+                    "arcvns.diagnosticLevel": {
+                        "description": "The minimal level for diagnostics to be reported",
+                        "type": "string",
+                        "default": "all",
+                        "enum": [
+                            "all",
+                            "warn",
+                            "error"
+                        ]
+                    }
+                }
+            }
+        ]
+    },
+    "scripts": {
+        "vscode:prepublish": "npm run compile",
+        "compile": "tsc -b",
+        "watch": "tsc -b -w",
+        "postinstall": "cd client && npm install & cd ../server && npm install && cd .."
+    },
+    "devDependencies": {
+        "@types/node": "^16.11.7",
+        "@typescript-eslint/eslint-plugin": "^5.30.0",
+        "@typescript-eslint/parser": "^5.30.0",
+        "eslint": "^8.13.0",
+        "typescript": "^4.7.2"
+    }
+}

@@ -1,0 +1,62 @@
+{
+    "Fade": {
+        "prefix": "fade",
+        "body": "fade(${1:transitionTime},${2:effect})",
+        "description": "Set the fade effect of an image"
+    },
+    "ShowWithFade": {
+        "prefix": "show",
+        "body": "show \"${1:filePath}\" ${2:imagePosX}:${3:imagePosY} ${4:canvasPivotX}:${5:canvasPivotY} ${6:imageScaleX}:${7:imageScaleY} fade(${8:transitionTime},${9:effect}) ${10:drawing}",
+        "description": "Show an image on the canvas"
+    },
+    "ShowWithoutFade": {
+        "prefix": "show",
+        "body": "show \"${1:filePath}\" ${2:imagePosX}:${3:imagePosY} ${4:canvasPivotX}:${5:canvasPivotY} ${6:imageScaleX}:${7:imageScaleY} ${8:drawing}",
+        "description": "Show an image on the canvas"
+    },
+    "Hide": {
+        "prefix": "hide",
+        "body": "hide \"${1:filePath}\" fade(${2:transitionTime},${3:effect})",
+        "description": "Hide an image on the canvas"
+    },
+    "Scale": {
+        "prefix": "scale",
+        "body": "scale \"${1:filePath}\" ${2:imageScaleX}:${3:imageScaleY} ${4:transitionTime} ${5:effect}",
+        "description": "Scale an image on the canvas"
+    },
+    "Move": {
+        "prefix": "move",
+        "body": "move \"${1:filePath}\" ${2:moveX}:${3:moveY} ${4:transitionTime} ${5:effect}",
+        "description": "Move an image on the canvas"
+    },
+    "Play": {
+        "prefix": "play",
+        "body": "play \"${1:filePath}\" ${2:fadeInTime} ${3:isLoop}",
+        "description": "Play a background music"
+    },
+    "Stop": {
+        "prefix": "stop",
+        "body": "stop \"${1:filePath}\" ${2:fadeOutTime}",
+        "description": "Stop a looping music"
+    },
+    "Volume": {
+        "prefix": "volume",
+        "body": "volume \"${1:filePath}\" ${2:volume} ${3:transitionTime}",
+        "description": "Change the volume of a music"
+    },
+    "Say": {
+        "prefix": "say",
+        "body": "say \"${1:contents}\"",
+        "description": "Print contents onto the textbox"
+    },
+    "Wait": {
+        "prefix": "wait",
+        "body": "wait ${1:delay} ${2:clearText}",
+        "description": "Delay the script"
+    },
+    "Auto": {
+        "prefix": "auto",
+        "body": "auto ${1:autoPlayTime}",
+        "description": "Autoplay the script"
+    }
+}
