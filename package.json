@@ -1,8 +1,11 @@
 {
     "name": "arcaea-vns-support",
     "displayName": "Arcaea Visual Novel Script Support",
-    "description": "",
+    "description": "Visual Studio Code's extension for arcaea visual novel script (.vns) file's reading and editing",
     "version": "0.0.1",
+    "license": "MIT",
+    "publisher": "RichadoWonosas",
+    "repository": "github:RichadoWonosas/arcaea-vns-support",
     "engines": {
         "vscode": "^1.69.0"
     },
