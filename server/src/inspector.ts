@@ -41,7 +41,7 @@ export const inspectVNS = (file: TextDocument): Diagnostic[] => {
         })));
     } else {
         // TODO: check values
-        errors = errors.concat(checkVNS(parsingResult));
+        errors = errors.concat(checkVNS(parsingResult, file.uri));
     }
 
     return errors;

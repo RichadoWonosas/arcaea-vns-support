@@ -69,6 +69,8 @@ export class PlayEvent {
     filePath: PosType<string>;
     fadeInTime: PosType<number>;
     loop?: PosType<"loop">;
+    loopStartTime?: PosType<number>;
+    loopEndTime?: PosType<number>;
 }
 
 export class StopEvent {

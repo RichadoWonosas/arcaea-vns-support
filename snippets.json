@@ -31,8 +31,13 @@
     },
     "Play": {
         "prefix": "play",
-        "body": "play \"${1:filePath}\" ${2:fadeInTime} ${3:isLoop}",
+        "body": "play \"${1:filePath}\" ${2:fadeInTime}",
         "description": "Play a background music"
+    },
+    "PlayWithLoop": {
+        "prefix": "play",
+        "body": "play \"${1:filePath}\" ${2:fadeInTime} loop ${3:loopStartTime}:${4:loopEndTime}",
+        "description": "Play a looping background music"
     },
     "Stop": {
         "prefix": "stop",

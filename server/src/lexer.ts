@@ -23,7 +23,7 @@ const say = createToken({ name: "Say", pattern: /say/ });
 const wait = createToken({ name: "Wait", pattern: /wait/ });
 const auto = createToken({ name: "Auto", pattern: /auto/ });
 
-const transition = createToken({ name: "Transition", pattern: /linear|(sine|cube|ease)(inout|in|out)/ });
+const transition = createToken({ name: "Transition", pattern: /linear|(sine|cube|ease)(inout|outin|in|out)/ });
 const loop = createToken({ name: "Loop", pattern: /loop/ });
 const clear = createToken({ name: "Clear", pattern: /clear/ });
 const drawing = createToken({ name: "Drawing", pattern: /normal|overlay/ });

@@ -62,9 +62,14 @@ class VNSParser extends CstParser {
     public playCommand = this.RULE("playCommand", () => {
         this.CONSUME(vnsToken.play);
         this.CONSUME(vnsToken.stringContent, { LABEL: "filePath" });
-        this.CONSUME(vnsToken.numberContent, { LABEL: "transitionTime" });
-        this.OPTION(() => {
+        this.CONSUME1(vnsToken.numberContent, { LABEL: "transitionTime" });
+        this.OPTION1(() => {
             this.CONSUME(vnsToken.loop, { LABEL: "loop" });
+            this.OPTION2(() => {
+                this.CONSUME2(vnsToken.numberContent, { LABEL: "loopStartTime" });
+                this.CONSUME(vnsToken.colon);
+                this.CONSUME3(vnsToken.numberContent, { LABEL: "loopEndTime" });
+            });
         });
     });
 

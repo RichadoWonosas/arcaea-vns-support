@@ -4,6 +4,17 @@ All notable changes to the "arcaea-vns-syntax" extension will be documented in t
 
 ## [Unreleased]
 
+## [0.0.3] - 2022-07-30
+
+### Added
+
+- Loop start/end point parsing and inspection
+
+### Changed
+
+- Adjusted severity of present errors
+- Adjusted file usage check: repetitions now show warning
+
 ## [0.0.2] - 2022-07-30
 
 ### Added
