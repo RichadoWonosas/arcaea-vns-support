@@ -10,7 +10,7 @@ All notable changes to the "arcaea-vns-syntax" extension will be documented in t
 
 - File usage check for image and music
 
-## Fixed
+### Fixed
 
 - Value check: only the first command of each kind were checked
 
