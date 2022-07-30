@@ -83,7 +83,10 @@ class VNSChecker extends BaseVNSVisitor {
         this.visit(ctx.imagePosition[0] as CstNode, input);
         this.visit(ctx.canvasPivot[0] as CstNode, input);
         this.visit(ctx.imageScale[0] as CstNode, input);
-        this.visit(ctx.fadeFunction[0] as CstNode, input);
+
+        if (ctx.fadeFunction) {
+            this.visit(ctx.fadeFunction[0] as CstNode, input);
+        }
     }
 
     hideCommand(ctx: CstChildrenDictionary, input: { errors: Diagnostic[], uri: string }) {

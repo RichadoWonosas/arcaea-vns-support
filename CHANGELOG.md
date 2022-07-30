@@ -4,6 +4,12 @@ All notable changes to the "arcaea-vns-syntax" extension will be documented in t
 
 ## [Unreleased]
 
+## [0.0.4] - 2022-07-30
+
+### Fixed
+
+- Fixed the bug about show command that do not have a fade function
+
 ## [0.0.3] - 2022-07-30
 
 ### Added
