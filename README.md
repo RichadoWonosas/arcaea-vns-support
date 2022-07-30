@@ -2,6 +2,11 @@
 
 Visual Studio Code's extension for arcaea visual novel script (.vns) file's reading and editing
 
+## Links
+
+- Repository: [GitHub](https://github.com/RichadoWonosas/arcaea-vns-support)
+- Releases: [VSCode Extension Marketplace](https://marketplace.visualstudio.com/items?itemName=RichadoWonosas.arcaea-vns-support)
+
 ## (Future) Features
 
 - [x] Syntax Highlight
