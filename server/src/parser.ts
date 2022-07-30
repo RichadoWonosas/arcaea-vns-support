@@ -64,7 +64,7 @@ class VNSParser extends CstParser {
         this.CONSUME(vnsToken.stringContent, { LABEL: "filePath" });
         this.CONSUME(vnsToken.numberContent, { LABEL: "transitionTime" });
         this.OPTION(() => {
-            this.CONSUME(vnsToken.loop);
+            this.CONSUME(vnsToken.loop, { LABEL: "loop" });
         });
     });
 

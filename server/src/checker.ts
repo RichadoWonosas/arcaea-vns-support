@@ -3,15 +3,22 @@ import { CstChildrenDictionary, IToken, CstNode, ICstVisitor, CstNodeLocation } 
 import { BaseVNSVisitor } from "./parser";
 import { vnsToken } from "./lexer";
 
-let imageFileList: { filePath: String, range: Range, operation: String }[] = [];
-let imageFileStack: String[] = [];
-let musicFileList: { filePath: String, range: Range, operation: String }[] = [];
-let musicFileStack: String[] = [];
+interface FileContent {
+    filePath: String,
+    range: Range,
+    operation: String
+}
 
 class VNSChecker extends BaseVNSVisitor {
+
+    imageFileList: FileContent[];
+    musicFileList: FileContent[];
+
     constructor() {
         super();
         this.validateVisitor();
+        this.imageFileList = [];
+        this.musicFileList = [];
     }
 
     xyValue(ctx: CstChildrenDictionary, errors: Diagnostic[], minValue?: Number, maxValue?: Number) {
@@ -67,7 +74,7 @@ class VNSChecker extends BaseVNSVisitor {
     }
 
     showCommand(ctx: CstChildrenDictionary, errors: Diagnostic[]) {
-        imageFileList.push({
+        this.imageFileList.push({
             filePath: (ctx.filePath[0] as IToken).image,
             operation: "show",
             range: transformRange(ctx.filePath[0] as IToken)
@@ -80,7 +87,7 @@ class VNSChecker extends BaseVNSVisitor {
     }
 
     hideCommand(ctx: CstChildrenDictionary, errors: Diagnostic[]) {
-        imageFileList.push({
+        this.imageFileList.push({
             filePath: (ctx.filePath[0] as IToken).image,
             operation: "hide",
             range: transformRange(ctx.filePath[0] as IToken)
@@ -90,7 +97,7 @@ class VNSChecker extends BaseVNSVisitor {
     }
 
     scaleCommand(ctx: CstChildrenDictionary, errors: Diagnostic[]) {
-        imageFileList.push({
+        this.imageFileList.push({
             filePath: (ctx.filePath[0] as IToken).image,
             operation: "scale",
             range: transformRange(ctx.filePath[0] as IToken)
@@ -111,7 +118,7 @@ class VNSChecker extends BaseVNSVisitor {
     }
 
     moveCommand(ctx: CstChildrenDictionary, errors: Diagnostic[]) {
-        imageFileList.push({
+        this.imageFileList.push({
             filePath: (ctx.filePath[0] as IToken).image,
             operation: "move",
             range: transformRange(ctx.filePath[0] as IToken)
@@ -132,9 +139,9 @@ class VNSChecker extends BaseVNSVisitor {
     }
 
     playCommand(ctx: CstChildrenDictionary, errors: Diagnostic[]) {
-        musicFileList.push({
+        this.musicFileList.push({
             filePath: (ctx.filePath[0] as IToken).image,
-            operation: "play",
+            operation: ctx.loop ? "loop" : "play",
             range: transformRange(ctx.filePath[0] as IToken)
         });
 
@@ -151,7 +158,7 @@ class VNSChecker extends BaseVNSVisitor {
     }
 
     stopCommand(ctx: CstChildrenDictionary, errors: Diagnostic[]) {
-        musicFileList.push({
+        this.musicFileList.push({
             filePath: (ctx.filePath[0] as IToken).image,
             operation: "stop",
             range: transformRange(ctx.filePath[0] as IToken)
@@ -170,7 +177,7 @@ class VNSChecker extends BaseVNSVisitor {
     }
 
     volumeCommand(ctx: CstChildrenDictionary, errors: Diagnostic[]) {
-        musicFileList.push({
+        this.musicFileList.push({
             filePath: (ctx.filePath[0] as IToken).image,
             operation: "volume",
             range: transformRange(ctx.filePath[0] as IToken)
@@ -243,17 +250,24 @@ class VNSChecker extends BaseVNSVisitor {
     }
 
     vns(ctx: CstChildrenDictionary, errors: Diagnostic[]) {
-        console.log(ctx);
-        this.visit(ctx.showCommand as CstNode[], errors);
-        this.visit(ctx.hideCommand as CstNode[], errors);
-        this.visit(ctx.scaleCommand as CstNode[], errors);
-        this.visit(ctx.moveCommand as CstNode[], errors);
-        this.visit(ctx.playCommand as CstNode[], errors);
-        this.visit(ctx.stopCommand as CstNode[], errors);
-        this.visit(ctx.volumeCommand as CstNode[], errors);
-        this.visit(ctx.sayCommand as CstNode[], errors);
-        this.visit(ctx.waitCommand as CstNode[], errors);
-        this.visit(ctx.autoCommand as CstNode[], errors);
+        // initialize lists
+        this.imageFileList = [];
+        this.musicFileList = [];
+
+        // visit all commands
+        ctx.showCommand.forEach((value) => { this.visit(value as CstNode, errors); });
+        ctx.hideCommand.forEach((value) => { this.visit(value as CstNode, errors); });
+        ctx.scaleCommand.forEach((value) => { this.visit(value as CstNode, errors); });
+        ctx.moveCommand.forEach((value) => { this.visit(value as CstNode, errors); });
+        ctx.playCommand.forEach((value) => { this.visit(value as CstNode, errors); });
+        ctx.stopCommand.forEach((value) => { this.visit(value as CstNode, errors); });
+        ctx.volumeCommand.forEach((value) => { this.visit(value as CstNode, errors); });
+        ctx.sayCommand.forEach((value) => { this.visit(value as CstNode, errors); });
+        ctx.waitCommand.forEach((value) => { this.visit(value as CstNode, errors); });
+        ctx.autoCommand.forEach((value) => { this.visit(value as CstNode, errors); });
+
+        // check file paths
+        checkFilepaths(this.imageFileList, this.musicFileList, errors);
     }
 }
 
@@ -262,6 +276,107 @@ const transformRange = (token: IToken): Range => {
         start: { line: token.startLine - 1, character: token.startColumn - 1 },
         end: { line: token.endLine - 1, character: token.endColumn }
     };
+};
+
+const checkFilepaths = (imageFileList: FileContent[], musicFileList: FileContent[], errors: Diagnostic[]): void => {
+    let imageStack: FileContent[] = [];
+    let musicStack: FileContent[] = [];
+
+    // sort file list
+    imageFileList.sort((a, b) => {
+        if (a.range.start.line < b.range.start.line) {
+            return -1;
+        } else if (a.range.start.line === b.range.start.line && a.range.start.character <= b.range.start.character) {
+            return -1;
+        } else {
+            return 1;
+        }
+    });
+    musicFileList.sort((a, b) => {
+        if (a.range.start.line < b.range.start.line) {
+            return -1;
+        } else if (a.range.start.line === b.range.start.line && a.range.start.character <= b.range.start.character) {
+            return -1;
+        } else {
+            return 1;
+        }
+    });
+
+    // process sorted image file
+    imageFileList.forEach(image => {
+        let idx = -1;
+        switch (image.operation) {
+            case "show":
+                imageStack.push(image);
+                break;
+            case "scale":
+            case "move":
+                idx = backFindIndex(imageStack, i => i.filePath === image.filePath);
+                if (idx < 0) {
+                    errors.push({
+                        severity: DiagnosticSeverity.Warning,
+                        message: `Cannot find currently showing instance of ${image.filePath}.`,
+                        range: image.range
+                    });
+                }
+                break;
+            case "hide":
+                idx = backFindIndex(imageStack, i => i.filePath === image.filePath);
+                if (idx < 0) {
+                    errors.push({
+                        severity: DiagnosticSeverity.Warning,
+                        message: `Cannot find currently showing instance of ${image.filePath}.`,
+                        range: image.range
+                    });
+                } else {
+                    imageStack.splice(idx, 1);
+                }
+                break;
+        }
+    });
+
+    // process sorted music file
+    musicFileList.forEach(music => {
+        let idx: number = -1;
+        switch (music.operation) {
+            case "loop":
+            case "play":
+                musicStack.push(music);
+                break;
+            case "volume":
+                idx = backFindIndex(musicStack, i => i.filePath === music.filePath);
+                if (idx < 0) {
+                    errors.push({
+                        severity: DiagnosticSeverity.Warning,
+                        message: `Cannot find currently playing instance of ${music.filePath}.`,
+                        range: music.range
+                    });
+                }
+                break;
+            case "stop":
+                idx = backFindIndex(musicStack, i => i.filePath === music.filePath);
+                if (idx < 0) {
+                    errors.push({
+                        severity: DiagnosticSeverity.Warning,
+                        message: `Cannot find currently playing instance of ${music.filePath}.`,
+                        range: music.range
+                    });
+                } else {
+                    musicStack.splice(idx, 1);
+                }
+                break;
+        }
+    });
+};
+
+const backFindIndex = <T>(array: T[], criteriaFn: (obj: T) => boolean): number => {
+    let i = -1;
+    for (i = array.length - 1; i >= 0; --i) {
+        if (criteriaFn(array[i])) {
+            break;
+        }
+    }
+    return i;
 };
 
 const checker = new VNSChecker();
