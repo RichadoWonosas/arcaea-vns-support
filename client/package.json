@@ -1,7 +1,7 @@
 {
     "name": "arcaea-vns-support-client",
     "description": "Client of vscode extension \"arcaea-vns-support\".",
-    "version": "0.0.4",
+    "version": "0.0.5",
     "license": "MIT",
     "repository": "github:RichadoWonosas/arcaea-vns-support",
     "engines": {

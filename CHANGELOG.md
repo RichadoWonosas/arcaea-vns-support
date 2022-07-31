@@ -4,11 +4,24 @@ All notable changes to the "arcaea-vns-syntax" extension will be documented in t
 
 ## [Unreleased]
 
+- Hover infos -- Coming up in version 0.1.0
+
+## [0.0.5] - 2022-07-31
+
+### Added
+
+- Parse result stroage, preparing for hover infos
+
+### Fixed
+
+- Bug about creating a new .vns file
+- "-outin" highlighting problem
+
 ## [0.0.4] - 2022-07-30
 
 ### Fixed
 
-- Fixed the bug about show command that do not have a fade function
+- Bug about show command that do not have a fade function
 
 ## [0.0.3] - 2022-07-30
 

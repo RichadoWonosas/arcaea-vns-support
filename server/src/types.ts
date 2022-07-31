@@ -1,32 +1,30 @@
 import { DiagnosticSeverity } from "vscode-languageserver";
-import { Position } from "vscode-languageserver-textdocument";
+import { Range } from "vscode-languageserver-textdocument";
 import exp = require("constants");
 
-export class PosType<T> {
-    start: Position;
-    end: Position;
-    value: T;
+export interface PosType<T> {
+    range: Range;
+    content: T;
 }
 
-export class VNSEffect {
+export interface VNSEffect {
     value: "linear" |
-        "sinein" | "sineout" | "sineinout" |
-        "cubein" | "cubeout" | "cubeinout" |
-        "easein" | "easeout" | "easeinout";
+    "sinein" | "sineout" | "sineinout" | "sineoutin" |
+    "cubein" | "cubeout" | "cubeinout" | "cubeoutin" |
+    "easein" | "easeout" | "easeinout" | "easeoutin";
 }
 
-export class VNSDrawing {
+export interface VNSDrawing {
     value: "normal" | "overlay";
 }
 
-export class FadeController {
-    static type = "fade";
+export interface FadeController {
     transitionTime: PosType<number>;
     effect: PosType<VNSEffect>;
 }
 
-export class ShowEvent {
-    static type = "show";
+export interface ShowEvent {
+    type: "show";
     filePath: PosType<string>;
     imagePosX: PosType<number>;
     imagePosY: PosType<number>;
@@ -35,19 +33,18 @@ export class ShowEvent {
     imageScaleX: PosType<number>;
     imageScaleY: PosType<number>;
     fade?: PosType<FadeController>;
-    drawing?: PosType<VNSDrawing>;
-    scaling?: PosType<"scale">;
+    drawing: PosType<VNSDrawing>;
+    scaling?: PosType<boolean>;
 }
 
-export class HideEvent {
-    static type = "hide";
+export interface HideEvent {
+    type: "hide";
     filePath: PosType<string>;
     fade: PosType<FadeController>;
-    effect: PosType<VNSEffect>;
 }
 
-export class ScaleEvent {
-    static type = "scale";
+export interface ScaleEvent {
+    type: "scale";
     filePath: PosType<string>;
     imageScaleX: PosType<number>;
     imageScaleY: PosType<number>;
@@ -55,8 +52,8 @@ export class ScaleEvent {
     effect: PosType<VNSEffect>;
 }
 
-export class MoveEvent {
-    static type = "move";
+export interface MoveEvent {
+    type: "move";
     filePath: PosType<string>;
     moveX: PosType<number>;
     moveY: PosType<number>;
@@ -64,49 +61,55 @@ export class MoveEvent {
     effect: PosType<VNSEffect>;
 }
 
-export class PlayEvent {
-    static type = "play";
+export interface PlayEvent {
+    type: "play";
     filePath: PosType<string>;
     fadeInTime: PosType<number>;
-    loop?: PosType<"loop">;
+    loop?: PosType<boolean>;
     loopStartTime?: PosType<number>;
     loopEndTime?: PosType<number>;
 }
 
-export class StopEvent {
-    static type = "stop";
+export interface StopEvent {
+    type: "stop";
     filePath: PosType<string>;
     fadeOutTime: PosType<number>;
 }
 
-export class VolumeEvent {
-    static type = "volume";
+export interface VolumeEvent {
+    type: "volume";
     filePath: PosType<string>;
     volume: PosType<number>;
     transitionTime: PosType<number>;
 }
 
-export class SayEvent {
-    static type = "say";
+export interface SayEvent {
+    type: "say";
     contents: PosType<string>;
 }
 
-export class WaitEvent {
-    static type = "wait";
+export interface WaitEvent {
+    type: "wait";
     delay: PosType<number>;
-    clear?: PosType<"clear">;
+    clear?: PosType<boolean>;
 }
 
-export class AutoPlayEvent {
-    static type = "auto";
+export interface AutoPlayEvent {
+    type: "auto";
     autoPlayTime: PosType<number>;
 }
 
+export type VNSEvent = PosType<ShowEvent | HideEvent | ScaleEvent | MoveEvent | PlayEvent | StopEvent | VolumeEvent | SayEvent | WaitEvent | AutoPlayEvent>;
+
+export type VNSFile = {
+    events: VNSEvent[]
+};
+
 export const effectList = [
     "linear",
-    "sinein", "sineout", "sineinout",
-    "cubein", "cubeout", "cubeinout",
-    "easein", "easeout", "easeinout"
+    "sinein", "sineout", "sineinout", "sineoutin",
+    "cubein", "cubeout", "cubeinout", "cubeoutin",
+    "easein", "easeout", "easeinout", "easeoutin"
 ];
 
 export const commandList = ["show", "hide", "scale", "move", "play", "stop", "volume", "say", "wait", "auto"];

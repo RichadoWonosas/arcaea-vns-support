@@ -18,7 +18,7 @@ class VNSParser extends CstParser {
         this.CONSUME(vnsToken.leftBrace);
         this.CONSUME(vnsToken.numberContent, { LABEL: "transitionTime" });
         this.CONSUME(vnsToken.comma);
-        this.CONSUME(vnsToken.transition);
+        this.CONSUME(vnsToken.transition, { LABEL: "transition" });
         this.CONSUME(vnsToken.rightBrace);
     });
 
@@ -31,9 +31,9 @@ class VNSParser extends CstParser {
         this.OPTION1(() => {
             this.SUBRULE(this.fadeFunction);
         });
-        this.CONSUME(vnsToken.drawing);
+        this.CONSUME(vnsToken.drawing, { LABEL: "drawing" });
         this.OPTION2(() => {
-            this.CONSUME(vnsToken.scale);
+            this.CONSUME(vnsToken.scale, { LABEL: "scale" });
         });
     });
 
@@ -48,7 +48,7 @@ class VNSParser extends CstParser {
         this.CONSUME(vnsToken.stringContent, { LABEL: "filePath" });
         this.SUBRULE(this.xyValue, { LABEL: "imageScale" });
         this.CONSUME(vnsToken.numberContent, { LABEL: "transitionTime" });
-        this.CONSUME(vnsToken.transition);
+        this.CONSUME(vnsToken.transition, { LABEL: "transition" });
     });
 
     public moveCommand = this.RULE("moveCommand", () => {
@@ -56,7 +56,7 @@ class VNSParser extends CstParser {
         this.CONSUME(vnsToken.stringContent, { LABEL: "filePath" });
         this.SUBRULE(this.xyValue, { LABEL: "movement" });
         this.CONSUME(vnsToken.numberContent, { LABEL: "transitionTime" });
-        this.CONSUME(vnsToken.transition);
+        this.CONSUME(vnsToken.transition, { LABEL: "transition" });
     });
 
     public playCommand = this.RULE("playCommand", () => {
@@ -95,7 +95,7 @@ class VNSParser extends CstParser {
         this.CONSUME(vnsToken.wait);
         this.CONSUME(vnsToken.numberContent, { LABEL: "time" });
         this.OPTION(() => {
-            this.CONSUME(vnsToken.clear);
+            this.CONSUME(vnsToken.clear, { LABEL: "clear" });
         });
     });
 

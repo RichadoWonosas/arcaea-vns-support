@@ -6,9 +6,11 @@ import { TextDocument } from "vscode-languageserver-textdocument";
 import { vnsLexer } from "./lexer";
 import { vnsParser } from "./parser";
 import { checkVNS } from "./checker";
+import { VNSFile } from "./types";
 
-export const inspectVNS = (file: TextDocument): Diagnostic[] => {
+export const inspectVNS = (file: TextDocument): { file: VNSFile, errors: Diagnostic[] } => {
     let errors: Diagnostic[] = [];
+    let fileResult: VNSFile = null;
 
     // TODO: inspect vns file
     const text = file.getText();
@@ -27,7 +29,9 @@ export const inspectVNS = (file: TextDocument): Diagnostic[] => {
 
     vnsParser.input = lexingResult.tokens;
     const parsingResult = vnsParser.vns();
+
     if (vnsParser.errors.length > 0) {
+        // shoot errors
         errors = errors.concat(vnsParser.errors.map((e) => ({
             severity: DiagnosticSeverity.Error,
             message: e.message,
@@ -40,9 +44,11 @@ export const inspectVNS = (file: TextDocument): Diagnostic[] => {
             }
         })));
     } else {
-        // TODO: check values
-        errors = errors.concat(checkVNS(parsingResult, file.uri));
+        // check values
+        const checkResult = checkVNS(parsingResult, file.uri);
+        fileResult = { events: checkResult.commands };
+        errors = errors.concat(checkResult.errors);
     }
 
-    return errors;
+    return { file: fileResult, errors: errors };
 };

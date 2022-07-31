@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { createToken, Lexer } from "chevrotain";
 
-const stringContent = createToken({ name: "String", pattern: /"([^"]|\n|\\")*[^\\]"/, line_breaks: true });
+const stringContent = createToken({ name: "String", pattern: /"([^"]|\n|\\")*[^\\]"|""/, line_breaks: true });
 const numberContent = createToken({ name: "Number", pattern: /-?[0-9]+(\.[0-9]+)?/ });
 
 const endline = createToken({ name: "Endline", pattern: /(\r|\n|\r\n)+/, line_breaks: true });

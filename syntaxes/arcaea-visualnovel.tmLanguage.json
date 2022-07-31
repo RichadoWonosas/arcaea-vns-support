@@ -25,7 +25,7 @@
 				},
 				{
 					"name": "constant.character.vns",
-					"match": "\\b(sine|cubic|ease)(in)?(out)?|loop|linear|normal|overlay|clear| scale\\b"
+					"match": "\\b(sine|cubic|ease)(inout|outin|in|out)|loop|linear|normal|overlay|clear| scale\\b"
 				}
 			]
 		},

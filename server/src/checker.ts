@@ -1,7 +1,7 @@
 import { Diagnostic, DiagnosticSeverity, Range } from "vscode-languageserver";
-import { CstChildrenDictionary, IToken, CstNode, ICstVisitor, CstNodeLocation } from "chevrotain";
+import { CstChildrenDictionary, IToken, CstNode } from "chevrotain";
 import { BaseVNSVisitor } from "./parser";
-import { vnsToken } from "./lexer";
+import { PosType, FadeController, VNSEffect, VNSFile, VNSEvent, ShowEvent, HideEvent, ScaleEvent, MoveEvent, PlayEvent, StopEvent, VolumeEvent, SayEvent, WaitEvent, AutoPlayEvent, VNSDrawing } from "./types";
 
 interface FileContent {
     filePath: string,
@@ -21,7 +21,7 @@ class VNSChecker extends BaseVNSVisitor {
         this.musicFileList = [];
     }
 
-    xyValue(ctx: CstChildrenDictionary, input: { errors: Diagnostic[], uri: string, minValue?: number, maxValue?: number }) {
+    xyValue(ctx: CstChildrenDictionary, input: { errors: Diagnostic[], uri: string, minValue?: number, maxValue?: number }): { x: PosType<number>, y: PosType<number> } {
         let [xT, yT] = [(ctx.x[0] as IToken), (ctx.y[0] as IToken)];
         let [x, y] = [xT, yT].map(t => Number.parseFloat(t.image));
 
@@ -58,11 +58,17 @@ class VNSChecker extends BaseVNSVisitor {
                 });
             }
         }
+        return {
+            x: { range: transformRange(xT), content: x },
+            y: { range: transformRange(yT), content: y }
+        };
     }
 
-    fadeFunction(ctx: CstChildrenDictionary, input: { errors: Diagnostic[], uri: string }) {
+    fadeFunction(ctx: CstChildrenDictionary, input: { errors: Diagnostic[], uri: string }): FadeController {
         let timeT = ctx.transitionTime[0] as IToken;
         let transitionTime = Number.parseFloat(timeT.image);
+        let transT = ctx.transition[0] as IToken;
+        let transition = transT.image;
 
         if (transitionTime < 0) {
             input.errors.push({
@@ -71,46 +77,86 @@ class VNSChecker extends BaseVNSVisitor {
                 range: transformRange(timeT)
             });
         }
+        return {
+            transitionTime: {
+                range: transformRange(timeT),
+                content: transitionTime
+            },
+            effect: {
+                range: transformRange(transT),
+                content: transition as unknown as VNSEffect
+            }
+        };
     }
 
-    showCommand(ctx: CstChildrenDictionary, input: { errors: Diagnostic[], uri: string }) {
+    showCommand(ctx: CstChildrenDictionary, input: { errors: Diagnostic[], uri: string }): ShowEvent {
+        let pathT = ctx.filePath[0] as IToken;
+        let imagePosition = this.visit(ctx.imagePosition[0] as CstNode, input);
+        let canvasPivot = this.visit(ctx.canvasPivot[0] as CstNode, input);
+        let imageScale = this.visit(ctx.imageScale[0] as CstNode, input);
+        let drawingT = ctx.drawing[0] as IToken;
+
         this.imageFileList.push({
-            filePath: (ctx.filePath[0] as IToken).image,
+            filePath: pathT.image,
             operation: "show",
-            range: transformRange(ctx.filePath[0] as IToken)
+            range: transformRange(pathT)
         });
 
-        this.visit(ctx.imagePosition[0] as CstNode, input);
-        this.visit(ctx.canvasPivot[0] as CstNode, input);
-        this.visit(ctx.imageScale[0] as CstNode, input);
+        let item: ShowEvent = {
+            type: "show",
+            filePath: { range: transformRange(pathT), content: pathT.image },
+            imagePosX: imagePosition.x,
+            imagePosY: imagePosition.y,
+            canvasPivotX: canvasPivot.x,
+            canvasPivotY: canvasPivot.y,
+            imageScaleX: imageScale.x,
+            imageScaleY: imageScale.y,
+            drawing: { range: transformRange(drawingT), content: drawingT.image as unknown as VNSDrawing }
+        };
 
         if (ctx.fadeFunction) {
-            this.visit(ctx.fadeFunction[0] as CstNode, input);
+            item.fade = this.visit(ctx.fadeFunction[0] as CstNode, input);
         }
+
+        if (ctx.scale) {
+            item.scaling = { range: transformRange(ctx.scale[0] as IToken), content: true };
+        }
+
+        return item;
     }
 
-    hideCommand(ctx: CstChildrenDictionary, input: { errors: Diagnostic[], uri: string }) {
+    hideCommand(ctx: CstChildrenDictionary, input: { errors: Diagnostic[], uri: string }): HideEvent {
+        let pathT = ctx.filePath[0] as IToken;
         this.imageFileList.push({
-            filePath: (ctx.filePath[0] as IToken).image,
+            filePath: pathT.image,
             operation: "hide",
-            range: transformRange(ctx.filePath[0] as IToken)
+            range: transformRange(pathT)
         });
 
-        this.visit(ctx.fadeFunction[0] as CstNode, input);
+        let fade = this.visit(ctx.fadeFunction[0] as CstNode, input);
+
+        let item: HideEvent = {
+            type: "hide",
+            filePath: { range: transformRange(pathT), content: pathT.image },
+            fade: fade
+        };
+
+        return item;
     }
 
     scaleCommand(ctx: CstChildrenDictionary, input: { errors: Diagnostic[], uri: string }) {
+        let pathT = ctx.filePath[0] as IToken;
+        let imageScale = this.visit(ctx.imageScale[0] as CstNode, input);
+        let timeT = ctx.transitionTime[0] as IToken;
+        let transT = ctx.transition[0] as IToken;
+
         this.imageFileList.push({
-            filePath: (ctx.filePath[0] as IToken).image,
+            filePath: pathT.image,
             operation: "scale",
-            range: transformRange(ctx.filePath[0] as IToken)
+            range: transformRange(pathT)
         });
 
-        this.visit(ctx.imageScale[0] as CstNode, input);
-
-        let timeT = ctx.transitionTime[0] as IToken;
         let transitionTime = Number.parseFloat(timeT.image);
-
         if (transitionTime < 0) {
             input.errors.push({
                 severity: DiagnosticSeverity.Error,
@@ -118,20 +164,32 @@ class VNSChecker extends BaseVNSVisitor {
                 range: transformRange(timeT)
             });
         }
+
+        let item: ScaleEvent = {
+            type: "scale",
+            filePath: { range: transformRange(pathT), content: pathT.image },
+            imageScaleX: imageScale.x,
+            imageScaleY: imageScale.y,
+            transitionTime: { range: transformRange(timeT), content: transitionTime },
+            effect: { range: transformRange(transT), content: transT.image as unknown as VNSEffect }
+        };
+
+        return item;
     }
 
-    moveCommand(ctx: CstChildrenDictionary, input: { errors: Diagnostic[], uri: string }) {
+    moveCommand(ctx: CstChildrenDictionary, input: { errors: Diagnostic[], uri: string }): MoveEvent {
+        let pathT = ctx.filePath[0] as IToken;
+        let timeT = ctx.transitionTime[0] as IToken;
+        let move = this.visit(ctx.movement[0] as CstNode, input);
+        let transT = ctx.transition[0] as IToken;
+
         this.imageFileList.push({
-            filePath: (ctx.filePath[0] as IToken).image,
+            filePath: pathT.image,
             operation: "move",
-            range: transformRange(ctx.filePath[0] as IToken)
+            range: transformRange(pathT)
         });
 
-        this.visit(ctx.movement[0] as CstNode, input);
-
-        let timeT = ctx.transitionTime[0] as IToken;
         let transitionTime = Number.parseFloat(timeT.image);
-
         if (transitionTime < 0) {
             input.errors.push({
                 severity: DiagnosticSeverity.Error,
@@ -139,16 +197,29 @@ class VNSChecker extends BaseVNSVisitor {
                 range: transformRange(timeT)
             });
         }
+
+        let item: MoveEvent = {
+            type: "move",
+            filePath: { range: transformRange(pathT), content: pathT.image },
+            moveX: move.x,
+            moveY: move.y,
+            transitionTime: { range: transformRange(timeT), content: transitionTime },
+            effect: { range: transformRange(transT), content: transT.image as unknown as VNSEffect }
+        };
+
+        return item;
     }
 
-    playCommand(ctx: CstChildrenDictionary, input: { errors: Diagnostic[], uri: string }) {
+    playCommand(ctx: CstChildrenDictionary, input: { errors: Diagnostic[], uri: string }): PlayEvent {
+        let pathT = ctx.filePath[0] as IToken;
+        let timeT = ctx.transitionTime[0] as IToken;
+
         this.musicFileList.push({
-            filePath: (ctx.filePath[0] as IToken).image,
+            filePath: pathT.image,
             operation: ctx.loop ? "loop" : "play",
-            range: transformRange(ctx.filePath[0] as IToken)
+            range: transformRange(pathT)
         });
 
-        let timeT = ctx.transitionTime[0] as IToken;
         let transitionTime = Number.parseFloat(timeT.image);
 
         if (transitionTime < 0) {
@@ -158,8 +229,16 @@ class VNSChecker extends BaseVNSVisitor {
                 range: transformRange(timeT)
             });
         }
+
+        let item: PlayEvent = {
+            type: "play",
+            filePath: { range: transformRange(pathT), content: pathT.image },
+            fadeInTime: { range: transformRange(timeT), content: transitionTime }
+        };
 
         if (ctx.loop) {
+            item.loop = { range: transformRange(ctx.loop[0] as IToken), content: true };
+
             if (ctx.loopStartTime) {
                 let startT = ctx.loopStartTime[0] as IToken;
                 let endT = ctx.loopEndTime[0] as IToken;
@@ -205,20 +284,25 @@ class VNSChecker extends BaseVNSVisitor {
                         }]
                     });
                 }
+                item.loopStartTime = { range: transformRange(startT), content: start };
+                item.loopEndTime = { range: transformRange(endT), content: end };
             }
         }
+
+        return item;
     }
 
-    stopCommand(ctx: CstChildrenDictionary, input: { errors: Diagnostic[], uri: string }) {
+    stopCommand(ctx: CstChildrenDictionary, input: { errors: Diagnostic[], uri: string }): StopEvent {
+        let pathT = ctx.filePath[0] as IToken;
+        let timeT = ctx.transitionTime[0] as IToken;
+
         this.musicFileList.push({
-            filePath: (ctx.filePath[0] as IToken).image,
+            filePath: pathT.image,
             operation: "stop",
-            range: transformRange(ctx.filePath[0] as IToken)
+            range: transformRange(pathT)
         });
 
-        let timeT = ctx.transitionTime[0] as IToken;
         let transitionTime = Number.parseFloat(timeT.image);
-
         if (transitionTime < 0) {
             input.errors.push({
                 severity: DiagnosticSeverity.Error,
@@ -226,18 +310,27 @@ class VNSChecker extends BaseVNSVisitor {
                 range: transformRange(timeT)
             });
         }
+
+        let item: StopEvent = {
+            type: "stop",
+            filePath: { range: transformRange(pathT), content: pathT.image },
+            fadeOutTime: { range: transformRange(timeT), content: transitionTime }
+        };
+        return item;
     }
 
-    volumeCommand(ctx: CstChildrenDictionary, input: { errors: Diagnostic[], uri: string }) {
+    volumeCommand(ctx: CstChildrenDictionary, input: { errors: Diagnostic[], uri: string }): VolumeEvent {
+        let pathT = ctx.filePath[0] as IToken;
+        let vT = ctx.volumeAfter[0] as IToken;
+        let timeT = ctx.transitionTime[0] as IToken;
+
         this.musicFileList.push({
-            filePath: (ctx.filePath[0] as IToken).image,
+            filePath: pathT.image,
             operation: "volume",
-            range: transformRange(ctx.filePath[0] as IToken)
+            range: transformRange(pathT)
         });
 
-        let vT = ctx.volumeAfter[0] as IToken;
         let volumeAfter = Number.parseFloat(vT.image);
-
         if (volumeAfter < 0) {
             input.errors.push({
                 severity: DiagnosticSeverity.Error,
@@ -252,9 +345,7 @@ class VNSChecker extends BaseVNSVisitor {
             });
         }
 
-        let timeT = ctx.transitionTime[0] as IToken;
         let transitionTime = Number.parseFloat(timeT.image);
-
         if (transitionTime < 0) {
             input.errors.push({
                 severity: DiagnosticSeverity.Error,
@@ -262,10 +353,20 @@ class VNSChecker extends BaseVNSVisitor {
                 range: transformRange(timeT)
             });
         }
+
+        let item: VolumeEvent = {
+            type: "volume",
+            filePath: { range: transformRange(pathT), content: pathT.image },
+            volume: { range: transformRange(vT), content: volumeAfter },
+            transitionTime: { range: transformRange(timeT), content: transitionTime }
+        };
+
+        return item;
     }
 
-    sayCommand(ctx: CstChildrenDictionary, input: { errors: Diagnostic[], uri: string }) {
+    sayCommand(ctx: CstChildrenDictionary, input: { errors: Diagnostic[], uri: string }): SayEvent {
         let content = ctx.content[0] as IToken;
+
         if (content.endLine - content.startLine >= 3) {
             input.errors.push({
                 severity: DiagnosticSeverity.Warning,
@@ -273,9 +374,16 @@ class VNSChecker extends BaseVNSVisitor {
                 range: transformRange(content)
             });
         }
+
+        let item: SayEvent = {
+            type: "say",
+            contents: { range: transformRange(content), content: content.image }
+        };
+
+        return item;
     }
 
-    waitCommand(ctx: CstChildrenDictionary, input: { errors: Diagnostic[], uri: string }) {
+    waitCommand(ctx: CstChildrenDictionary, input: { errors: Diagnostic[], uri: string }): WaitEvent {
         let timeT = ctx.time[0] as IToken;
         let time = Number.parseFloat(timeT.image);
 
@@ -286,12 +394,23 @@ class VNSChecker extends BaseVNSVisitor {
                 range: transformRange(timeT)
             });
         }
+
+        let item: WaitEvent = {
+            type: "wait",
+            delay: { range: transformRange(timeT), content: time }
+        };
+
+        if (ctx.clear) {
+            item.clear = { range: transformRange(ctx.clear[0] as IToken), content: true };
+        }
+
+        return item;
     }
 
-    autoCommand(ctx: CstChildrenDictionary, input: { errors: Diagnostic[], uri: string }) {
+    autoCommand(ctx: CstChildrenDictionary, input: { errors: Diagnostic[], uri: string }): AutoPlayEvent {
         let timeT = ctx.time[0] as IToken;
-        let time = Number.parseFloat(timeT.image);
 
+        let time = Number.parseFloat(timeT.image);
         if (time < 0) {
             input.errors.push({
                 severity: DiagnosticSeverity.Error,
@@ -299,27 +418,68 @@ class VNSChecker extends BaseVNSVisitor {
                 range: transformRange(timeT)
             });
         }
+
+        let item: AutoPlayEvent = {
+            type: "auto",
+            autoPlayTime: { range: transformRange(timeT), content: time }
+        };
+
+        return item;
     }
 
-    vns(ctx: CstChildrenDictionary, input: { errors: Diagnostic[], uri: string }) {
+    vns(ctx: CstChildrenDictionary, input: { errors: Diagnostic[], uri: string }): VNSEvent[] {
         // initialize lists
         this.imageFileList = [];
         this.musicFileList = [];
+        let commandList: VNSEvent[] = [];
 
         // visit all commands
-        ctx.showCommand.forEach((value) => { this.visit(value as CstNode, input); });
-        ctx.hideCommand.forEach((value) => { this.visit(value as CstNode, input); });
-        ctx.scaleCommand.forEach((value) => { this.visit(value as CstNode, input); });
-        ctx.moveCommand.forEach((value) => { this.visit(value as CstNode, input); });
-        ctx.playCommand.forEach((value) => { this.visit(value as CstNode, input); });
-        ctx.stopCommand.forEach((value) => { this.visit(value as CstNode, input); });
-        ctx.volumeCommand.forEach((value) => { this.visit(value as CstNode, input); });
-        ctx.sayCommand.forEach((value) => { this.visit(value as CstNode, input); });
-        ctx.waitCommand.forEach((value) => { this.visit(value as CstNode, input); });
-        ctx.autoCommand.forEach((value) => { this.visit(value as CstNode, input); });
+        if (ctx.showCommand) {
+            ctx.showCommand.forEach((value) => { let item = this.visit(value as CstNode, input); commandList.push({ range: transformRange(value as IToken), content: item }); });
+        }
+        if (ctx.hideCommand) {
+            ctx.hideCommand.forEach((value) => { let item = this.visit(value as CstNode, input); commandList.push({ range: transformRange(value as IToken), content: item }); });
+        }
+        if (ctx.scaleCommand) {
+            ctx.scaleCommand.forEach((value) => { let item = this.visit(value as CstNode, input); commandList.push({ range: transformRange(value as IToken), content: item }); });
+        }
+        if (ctx.moveCommand) {
+            ctx.moveCommand.forEach((value) => { let item = this.visit(value as CstNode, input); commandList.push({ range: transformRange(value as IToken), content: item }); });
+        }
+        if (ctx.playCommand) {
+            ctx.playCommand.forEach((value) => { let item = this.visit(value as CstNode, input); commandList.push({ range: transformRange(value as IToken), content: item }); });
+        }
+        if (ctx.stopCommand) {
+            ctx.stopCommand.forEach((value) => { let item = this.visit(value as CstNode, input); commandList.push({ range: transformRange(value as IToken), content: item }); });
+        }
+        if (ctx.volumeCommand) {
+            ctx.volumeCommand.forEach((value) => { let item = this.visit(value as CstNode, input); commandList.push({ range: transformRange(value as IToken), content: item }); });
+        }
+        if (ctx.sayCommand) {
+            ctx.sayCommand.forEach((value) => { let item = this.visit(value as CstNode, input); commandList.push({ range: transformRange(value as IToken), content: item }); });
+        }
+        if (ctx.waitCommand) {
+            ctx.waitCommand.forEach((value) => { let item = this.visit(value as CstNode, input); commandList.push({ range: transformRange(value as IToken), content: item }); });
+        }
+        if (ctx.autoCommand) {
+            ctx.autoCommand.forEach((value) => { let item = this.visit(value as CstNode, input); commandList.push({ range: transformRange(value as IToken), content: item }); });
+        }
 
         // check file paths
         checkFilepaths(this.imageFileList, this.musicFileList, input.errors, input.uri);
+
+        // sort commands
+        commandList.sort((a, b) => {
+            if (a.range.start.line < b.range.start.line) {
+                return -1;
+            } else if (a.range.start.line === b.range.start.line && a.range.start.character <= b.range.start.character) {
+                return -1;
+            } else {
+                return 1;
+            }
+        });
+
+        return commandList;
     }
 }
 
@@ -456,8 +616,8 @@ const backFindIndex = <T>(array: T[], criteriaFn: (obj: T) => boolean): number =
 };
 
 const checker = new VNSChecker();
-export const checkVNS = (vns: CstNode, uri: string): Diagnostic[] => {
+export const checkVNS = (vns: CstNode, uri: string): { commands: VNSEvent[], errors: Diagnostic[] } => {
     let errors: Diagnostic[] = [];
-    checker.visit(vns, { errors: errors, uri: uri });
-    return errors;
+    let commandList = checker.visit(vns, { errors: errors, uri: uri });
+    return { commands: commandList, errors: errors };
 };
