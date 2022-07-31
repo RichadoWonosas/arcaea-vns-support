@@ -2,7 +2,7 @@
     "name": "arcaea-vns-support",
     "displayName": "Arcaea Visual Novel Script Support",
     "description": "Visual Studio Code's extension for arcaea visual novel script (.vns) file's reading and editing",
-    "version": "0.0.5",
+    "version": "0.0.6",
     "license": "MIT",
     "publisher": "RichadoWonosas",
     "repository": "github:RichadoWonosas/arcaea-vns-support",
@@ -30,6 +30,14 @@
                     ".vns"
                 ],
                 "configuration": "./language-configuration.json"
+            },
+            {
+                "id": "json",
+                "filenamePatterns": [
+                    "vn",
+                    "paths",
+                    "entries_*"
+                ]
             }
         ],
         "grammars": [
@@ -45,21 +53,18 @@
                 "path": "./snippets.json"
             }
         ],
-        "configuration": [
+        "jsonValidation": [
             {
-                "title": "Arcaea Visual Novel Script",
-                "properties": {
-                    "arcvns.diagnosticLevel": {
-                        "description": "The minimal level for diagnostics to be reported",
-                        "type": "string",
-                        "default": "all",
-                        "enum": [
-                            "all",
-                            "warn",
-                            "error"
-                        ]
-                    }
-                }
+                "fileMatch": "paths",
+                "url": "./json-schema/paths.json"
+            },
+            {
+                "fileMatch": "entries_*",
+                "url": "./json-schema/entries.json"
+            },
+            {
+                "fileMatch": "vn",
+                "url": "./json-schema/vn.json"
             }
         ]
     },

@@ -1,0 +1,60 @@
+{
+    "$schema": "https://json-schema.org/draft-07/schema",
+    "$id": "https://raw.githubusercontent.com/RichadoWonosas/arcaea-vns-support/master/json-schema/paths.json",
+    "title": "Arcaea story file root paths",
+    "description": "Root path definitions of Arcaea's stories",
+    "type": "object",
+    "properties": {
+        "paths": {
+            "description": "Paths of Arcaea's stories",
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/path"
+            }
+        }
+    },
+    "required": [
+        "paths"
+    ],
+    "definitions": {
+        "path": {
+            "description": "Path of a single story series",
+            "type": "object",
+            "properties": {
+                "storyType": {
+                    "description": "Types of the story series. Decides which page to show this series.\n0: Main Story\n1: Side Story\n2: 3.0 Main Story\n3: Short Story\n4: 4.0 Main Story",
+                    "enum": [
+                        0,
+                        1,
+                        2,
+                        3,
+                        4
+                    ]
+                },
+                "characterIcon": {
+                    "description": "Character ID for the character icon to show under the story line",
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "characterIconXOffset": {
+                    "description": "The X offset for the character icon to show",
+                    "type": "integer"
+                },
+                "main": {
+                    "description": "ID for the story series",
+                    "type": "integer",
+                    "minimum": 0
+                }
+            },
+            "required": [
+                "storyType",
+                "main"
+            ],
+            "dependencies": {
+                "characterIcon": [
+                    "characterIconXOffset"
+                ]
+            }
+        }
+    }
+}

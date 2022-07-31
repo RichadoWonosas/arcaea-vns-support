@@ -6,6 +6,16 @@ All notable changes to the "arcaea-vns-syntax" extension will be documented in t
 
 - Hover infos -- Coming up in version 0.1.0
 
+## [0.0.6] - 2022-07-31
+
+### Added
+
+- .json file support about Arcaea's stories, including "paths", "entries_*" and "vn" file
+
+### Removed
+
+- Configuration about diagnostics
+
 ## [0.0.5] - 2022-07-31
 
 ### Added

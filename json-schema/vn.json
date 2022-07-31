@@ -1,0 +1,42 @@
+{
+    "$schema": "https://json-schema.org/draft-07/schema",
+    "$id": "https://raw.githubusercontent.com/RichadoWonosas/arcaea-vns-support/master/json-schema/vn.json",
+    "title": "Arcaea story storage",
+    "description": "Storage and translation of Arcaea's stories",
+    "type": "object",
+    "patternProperties": {
+        "^[1-9]\\d*-[1-9]\\d*$": {
+            "description": "A single story with translations",
+            "type": "object",
+            "properties": {
+                "en": {
+                    "description": "English story content",
+                    "type": "string"
+                },
+                "ja": {
+                    "description": "Japanese story content",
+                    "type": "string"
+                },
+                "ko": {
+                    "description": "Korean story content",
+                    "type": "string"
+                },
+                "zh-Hans": {
+                    "description": "Simplified Chinese story content",
+                    "type": "string"
+                },
+                "zh-Hant": {
+                    "description": "Traditional Chinese story content",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "en",
+                "ja",
+                "ko",
+                "zh-Hans",
+                "zh-Hant"
+            ]
+        }
+    }
+}

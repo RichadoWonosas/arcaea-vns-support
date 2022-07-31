@@ -1,0 +1,114 @@
+{
+    "$schema": "https://json-schema.org/draft-07/schema",
+    "$id": "https://raw.githubusercontent.com/RichadoWonosas/arcaea-vns-support/master/json-schema/entries.json",
+    "title": "Arcaea story properties",
+    "description": "Unlock conditions and story types of Arcaea's single story series",
+    "type": "object",
+    "properties": {
+        "entries": {
+            "description": "Properties of Arcaea's single story series",
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/entry"
+            }
+        }
+    },
+    "required": [
+        "entries"
+    ],
+    "definitions": {
+        "entry": {
+            "description": "Properties of a single story",
+            "type": "object",
+            "properties": {
+                "minor": {
+                    "description": "ID for the story in the series",
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "storyType": {
+                    "description": "Type of the story.\n\"nvl\": Common Novel\n\"vn\": Visual Novel",
+                    "enum": [
+                        "nvl",
+                        "vn"
+                    ]
+                },
+                "requiredPack": {
+                    "description": "Pack (or song) required to unlock the story",
+                    "type": "string"
+                },
+                "requiredMinor": {
+                    "description": "Another story in the series required unlocked to unlock the story",
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "clearSongId": {
+                    "description": "Song ID required to unlock the story by playing certain song",
+                    "type": "string"
+                },
+                "clearCharaId": {
+                    "description": "Character ID required to unlock the story by playing song with certain character.\nIf \"clearSongId\" is also available, one should play certain song with certain character to unlock the story.",
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "alternatePrefix": {
+                    "description": "Custom series ID display of the story",
+                    "type": "string"
+                },
+                "alternateSuffix": {
+                    "description": "Custom story ID display of the story",
+                    "type": "string"
+                },
+                "additionalRequires": {
+                    "description": "Other stories in any series of the story required unlocked to unlock the story",
+                    "type": "array",
+                    "items": {
+                        "description": "Story's full ID of required story",
+                        "type": "string"
+                    }
+                },
+                "requirementAnomalyId": {
+                    "description": "Anomaly ID required to unlock the story",
+                    "type": "string"
+                },
+                "charIcon1": {
+                    "description": "Character ID for certain character to show on the side of common novel.\n-1 for not showing anyone",
+                    "type": "integer",
+                    "minimum": -1
+                },
+                "charIcon2": {
+                    "description": "Another Character ID for certain character to show on the side of common novel.\n-1 for not showing anyone",
+                    "type": "integer",
+                    "minimum": -1
+                },
+                "storyCgPath": {
+                    "description": "CG path of the illustration to be shown when reading the story",
+                    "type": "string"
+                },
+                "bgmOverride": {
+                    "description": "BGM path of the music to be played when reading the story",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "minor",
+                "storyType"
+            ],
+            "if": {
+                "properties": {
+                    "storyType": {
+                        "const": "vn"
+                    }
+                }
+            },
+            "then": {
+                "properties": {
+                    "storyData": {
+                        "description": "Visual novel script file name of the story",
+                        "type": "string"
+                    }
+                }
+            }
+        }
+    }
+}
