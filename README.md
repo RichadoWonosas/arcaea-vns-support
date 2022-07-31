@@ -11,6 +11,7 @@ Visual Studio Code's extension for arcaea visual novel script (.vns) file's read
 
 - [x] Syntax Highlight
 - [x] Basic Snippets
+- [x] Related .json File Support
 - .vns File Inspection
   - [x] .vns File Parsing
   - [x] Basic Value Check
