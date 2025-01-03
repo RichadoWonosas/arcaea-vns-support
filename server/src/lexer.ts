@@ -22,11 +22,13 @@ const volume = createToken({ name: "Volume", pattern: /volume/ });
 const say = createToken({ name: "Say", pattern: /say/ });
 const wait = createToken({ name: "Wait", pattern: /wait/ });
 const auto = createToken({ name: "Auto", pattern: /auto/ });
+const hidetextbox = createToken({ name: "HideTextbox", pattern: /hidetextbox/ });
+const unloadtextures = createToken({ name: "UnloadTextures", pattern: /unload_textures/ });
 
 const transition = createToken({ name: "Transition", pattern: /linear|(sine|cube|ease)(inout|outin|in|out)/ });
 const loop = createToken({ name: "Loop", pattern: /loop/ });
 const clear = createToken({ name: "Clear", pattern: /clear/ });
 const drawing = createToken({ name: "Drawing", pattern: /normal|overlay/ });
 
-export const vnsToken = { stringContent, numberContent, endline, space, leftBrace, rightBrace, colon, comma, fade, show, hide, scale, move, play, stop, volume, say, wait, auto, transition, loop, clear, drawing };
-export const vnsLexer = new Lexer([stringContent, numberContent, endline, space, leftBrace, rightBrace, colon, comma, fade, show, hide, scale, move, play, stop, volume, say, wait, auto, transition, loop, clear, drawing]);
+export const vnsToken = { stringContent, numberContent, endline, space, leftBrace, rightBrace, colon, comma, fade, show, hide, scale, move, play, stop, volume, say, wait, auto, hidetextbox, unloadtextures, transition, loop, clear, drawing };
+export const vnsLexer = new Lexer([stringContent, numberContent, endline, space, leftBrace, rightBrace, colon, comma, fade, hidetextbox, unloadtextures, show, hide, scale, move, play, stop, volume, say, wait, auto, transition, loop, clear, drawing]);

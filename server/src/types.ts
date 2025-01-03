@@ -99,7 +99,15 @@ export interface AutoPlayEvent {
     autoPlayTime: PosType<number>;
 }
 
-export type VNSEvent = PosType<ShowEvent | HideEvent | ScaleEvent | MoveEvent | PlayEvent | StopEvent | VolumeEvent | SayEvent | WaitEvent | AutoPlayEvent>;
+export interface HideTextboxEvent {
+    type: "hidetextbox";
+}
+
+export interface UnloadTexturesEvent {
+    type: "unload_textures";
+}
+
+export type VNSEvent = PosType<ShowEvent | HideEvent | ScaleEvent | MoveEvent | PlayEvent | StopEvent | VolumeEvent | SayEvent | WaitEvent | AutoPlayEvent | HideTextboxEvent | UnloadTexturesEvent>;
 
 export type VNSFile = {
     events: VNSEvent[]
@@ -112,6 +120,6 @@ export const effectList = [
     "easein", "easeout", "easeinout", "easeoutin"
 ];
 
-export const commandList = ["show", "hide", "scale", "move", "play", "stop", "volume", "say", "wait", "auto"];
+export const commandList = ["show", "hide", "scale", "move", "play", "stop", "volume", "say", "wait", "auto", "hidetextbox", "unload_textures"];
 
 export const drawingList = ["normal", "overlay"];

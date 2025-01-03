@@ -1,7 +1,7 @@
 import { Diagnostic, DiagnosticSeverity, Range } from "vscode-languageserver";
 import { CstChildrenDictionary, IToken, CstNode } from "chevrotain";
 import { BaseVNSVisitor } from "./parser";
-import { PosType, FadeController, VNSEffect, VNSFile, VNSEvent, ShowEvent, HideEvent, ScaleEvent, MoveEvent, PlayEvent, StopEvent, VolumeEvent, SayEvent, WaitEvent, AutoPlayEvent, VNSDrawing } from "./types";
+import { PosType, FadeController, VNSEffect, VNSFile, VNSEvent, ShowEvent, HideEvent, ScaleEvent, MoveEvent, PlayEvent, StopEvent, VolumeEvent, SayEvent, WaitEvent, AutoPlayEvent, VNSDrawing, HideTextboxEvent, UnloadTexturesEvent } from "./types";
 
 interface FileContent {
     filePath: string,
@@ -337,12 +337,12 @@ class VNSChecker extends BaseVNSVisitor {
                 message: `The volume should be no less than 0.`,
                 range: transformRange(vT)
             });
-        } else if (volumeAfter > 1) {
-            input.errors.push({
-                severity: DiagnosticSeverity.Error,
-                message: `The volume should be no more than 1.`,
-                range: transformRange(vT)
-            });
+            // } else if (volumeAfter > 1) {
+            //     input.errors.push({
+            //         severity: DiagnosticSeverity.Error,
+            //         message: `The volume should be no more than 1.`,
+            //         range: transformRange(vT)
+            //     });
         }
 
         let transitionTime = Number.parseFloat(timeT.image);
@@ -427,42 +427,39 @@ class VNSChecker extends BaseVNSVisitor {
         return item;
     }
 
+    hideTextboxCommand(ctx: CstChildrenDictionary, input: { errors: Diagnostic[], uri: string }): HideTextboxEvent {
+        let item: HideTextboxEvent = {
+            type: "hidetextbox",
+        };
+
+        return item;
+    }
+
+    unloadTexturesCommand(ctx: CstChildrenDictionary, input: { errors: Diagnostic[], uri: string }): UnloadTexturesEvent {
+        let item: UnloadTexturesEvent = {
+            type: "unload_textures",
+        };
+
+        return item;
+    }
+
     vns(ctx: CstChildrenDictionary, input: { errors: Diagnostic[], uri: string }): VNSEvent[] {
         // initialize lists
         this.imageFileList = [];
         this.musicFileList = [];
         let commandList: VNSEvent[] = [];
 
+        const COMMAND_ENTRIES: string[] = [
+            "waitCommand", "autoCommand", "hideTextboxCommand", "unloadTexturesCommand",
+            "showCommand", "hideCommand", "scaleCommand", "moveCommand",
+            "playCommand", "stopCommand", "volumeCommand", "sayCommand",
+        ];
+
         // visit all commands
-        if (ctx.showCommand) {
-            ctx.showCommand.forEach((value) => { let item = this.visit(value as CstNode, input); commandList.push({ range: transformRange(value as IToken), content: item }); });
-        }
-        if (ctx.hideCommand) {
-            ctx.hideCommand.forEach((value) => { let item = this.visit(value as CstNode, input); commandList.push({ range: transformRange(value as IToken), content: item }); });
-        }
-        if (ctx.scaleCommand) {
-            ctx.scaleCommand.forEach((value) => { let item = this.visit(value as CstNode, input); commandList.push({ range: transformRange(value as IToken), content: item }); });
-        }
-        if (ctx.moveCommand) {
-            ctx.moveCommand.forEach((value) => { let item = this.visit(value as CstNode, input); commandList.push({ range: transformRange(value as IToken), content: item }); });
-        }
-        if (ctx.playCommand) {
-            ctx.playCommand.forEach((value) => { let item = this.visit(value as CstNode, input); commandList.push({ range: transformRange(value as IToken), content: item }); });
-        }
-        if (ctx.stopCommand) {
-            ctx.stopCommand.forEach((value) => { let item = this.visit(value as CstNode, input); commandList.push({ range: transformRange(value as IToken), content: item }); });
-        }
-        if (ctx.volumeCommand) {
-            ctx.volumeCommand.forEach((value) => { let item = this.visit(value as CstNode, input); commandList.push({ range: transformRange(value as IToken), content: item }); });
-        }
-        if (ctx.sayCommand) {
-            ctx.sayCommand.forEach((value) => { let item = this.visit(value as CstNode, input); commandList.push({ range: transformRange(value as IToken), content: item }); });
-        }
-        if (ctx.waitCommand) {
-            ctx.waitCommand.forEach((value) => { let item = this.visit(value as CstNode, input); commandList.push({ range: transformRange(value as IToken), content: item }); });
-        }
-        if (ctx.autoCommand) {
-            ctx.autoCommand.forEach((value) => { let item = this.visit(value as CstNode, input); commandList.push({ range: transformRange(value as IToken), content: item }); });
+        for (let i = 0; i < COMMAND_ENTRIES.length; i++) {
+            if (ctx[COMMAND_ENTRIES[i]]) {
+                ctx[COMMAND_ENTRIES[i]].forEach((value) => { let item = this.visit(value as CstNode, input); commandList.push({ range: transformRange(value as IToken), content: item }); });
+            }
         }
 
         // check file paths

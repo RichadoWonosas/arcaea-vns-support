@@ -63,5 +63,15 @@
         "prefix": "auto",
         "body": "auto ${1:autoPlayTime}",
         "description": "Autoplay the script"
+    },
+    "HideTextbox": {
+        "prefix": "hidetextbox",
+        "body": "hidetextbox",
+        "description": "Hide textbox"
+    },
+    "UnloadTextures": {
+        "prefix": "unload_textures",
+        "body": "unload_textures",
+        "description": "Unload all loaded textures"
     }
 }

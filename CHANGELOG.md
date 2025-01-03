@@ -6,6 +6,10 @@ All notable changes to the "arcaea-vns-syntax" extension will be documented in t
 
 - Hover infos -- Coming up in version 0.1.0
 
+## [0.0.7] - 2025-01-03
+
+- Updated syntax to Arcaea 6.0
+
 ## [0.0.6] - 2022-07-31
 
 ### Added

@@ -17,7 +17,7 @@
 			"patterns": [
 				{
 					"name": "keyword.control.vns",
-					"match": "^(show|hide|move|play|stop|volume|say|wait|auto|scale)\\b"
+					"match": "^(show|hide|move|play|stop|volume|say|wait|auto|scale|hidetextbox|unload_textures)\\b"
 				},
 				{
 					"name": "entity.name.function.vns",

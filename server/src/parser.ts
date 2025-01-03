@@ -1,5 +1,5 @@
 import { vnsToken } from "./lexer";
-import { CstParser } from "chevrotain";
+import { CstParser, EOF } from "chevrotain";
 
 class VNSParser extends CstParser {
     constructor() {
@@ -104,10 +104,25 @@ class VNSParser extends CstParser {
         this.CONSUME(vnsToken.numberContent, { LABEL: "time" });
     });
 
+    public hideTextboxCommand = this.RULE("hideTextboxCommand", () => {
+        this.CONSUME(vnsToken.hidetextbox);
+    });
+
+    public unloadTexturesCommand = this.RULE("unloadTexturesCommand", () => {
+        this.CONSUME(vnsToken.unloadtextures);
+    });
+
+    public endlineCommand = this.RULE("endlineCommand", () => {
+        this.CONSUME(vnsToken.endline);
+    });
+
     public vns = this.RULE("vns", () => {
         this.MANY_SEP({
             DEF: () => {
                 this.OR([
+                    { ALT: () => this.CONSUME(EOF) },
+                    { ALT: () => this.SUBRULE(this.hideTextboxCommand) },
+                    { ALT: () => this.SUBRULE(this.unloadTexturesCommand) },
                     { ALT: () => this.SUBRULE(this.showCommand) },
                     { ALT: () => this.SUBRULE(this.hideCommand) },
                     { ALT: () => this.SUBRULE(this.scaleCommand) },
@@ -117,11 +132,18 @@ class VNSParser extends CstParser {
                     { ALT: () => this.SUBRULE(this.volumeCommand) },
                     { ALT: () => this.SUBRULE(this.sayCommand) },
                     { ALT: () => this.SUBRULE(this.waitCommand) },
-                    { ALT: () => this.SUBRULE(this.autoCommand) }
+                    { ALT: () => this.SUBRULE(this.autoCommand) },
                 ]);
             },
             SEP: vnsToken.endline
         });
+        // this.OPTION(() => {
+        //     this.MANY1(() => {
+        //         this.OR1([
+        //             { ALT: () => this.CONSUME(vnsToken.endline) },
+        //         ]);
+        //     });
+        // });
     });
 }
 
