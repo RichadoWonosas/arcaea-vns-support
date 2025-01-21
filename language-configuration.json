@@ -5,6 +5,10 @@
         [
             "(",
             ")"
+        ],
+        [
+            "{",
+            "}"
         ]
     ],
     // symbols that are auto closed when typing
@@ -28,10 +32,19 @@
             "close": "%%"
         },
         {
+            "open": "^^",
+            "close": "^^"
+        },
+        {
+            "open": "$",
+            "close": "$"
+        },
+        {
             "open": "{",
             "close": "}"
         }
     ],
+    "autoCloseBefore": "^$%;:.,=}])>\" \n\t",
     // symbols that can be used to surround a selection
     "surroundingPairs": [
         [
@@ -45,6 +58,14 @@
         [
             "%%",
             "%%"
+        ],
+        [
+            "^^",
+            "^^"
+        ],
+        [
+            "$",
+            "$"
         ],
         [
             "{",

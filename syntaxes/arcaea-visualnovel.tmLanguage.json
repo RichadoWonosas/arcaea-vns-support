@@ -17,7 +17,7 @@
 			"patterns": [
 				{
 					"name": "keyword.control.vns",
-					"match": "^(show|hide|move|play|stop|volume|say|wait|auto|scale|hidetextbox|unload_textures)\\b"
+					"match": "^(show|hide|move|play|stop|volume|say(_legacy)?|wait|auto(play_legacy)?|scale|hidetextbox|unload_textures)\\b"
 				},
 				{
 					"name": "entity.name.function.vns",
@@ -37,6 +37,9 @@
 				{
 					"name": "constant.character.escape.vns",
 					"match": "\\\\."
+				},
+				{
+					"include": "#stringeffect"
 				}
 			]
 		},
@@ -45,6 +48,112 @@
 				{
 					"name": "constant.numeric.vns",
 					"match": "-?(0|[1-9]\\d*)(.\\d+)?"
+				}
+			]
+		},
+		"stringeffect": {
+			"patterns": [
+				{
+					"name": "meta.embedded.block.rubybase.vns",
+					"begin": "\\%{2}",
+					"end": "\\%{2}",
+					"beginCaptures": {
+						"0": {
+							"name": "punctuation.definition.keyword.rubystart.vns"
+						}
+					},
+					"endCaptures": {
+						"0": {
+							"name": "punctuation.definition.keyword.rubyend.vns"
+						}
+					},
+					"patterns": [
+						{
+							"include": "#contentA"
+						}
+					]
+				},
+				{
+					"name": "meta.embedded.block.construbybase.vns",
+					"begin": "\\^{2}",
+					"end": "\\^{2}",
+					"beginCaptures": {
+						"0": {
+							"name": "punctuation.definition.keyword.construbystart.vns"
+						}
+					},
+					"endCaptures": {
+						"0": {
+							"name": "punctuation.definition.keyword.construbyend.vns"
+						}
+					},
+					"patterns": [
+						{
+							"include": "#contentA"
+						}
+					]
+				},
+				{
+					"name": "meta.embedded.block.rt.vns",
+					"begin": "\\{",
+					"end": "\\}",
+					"patterns": [
+						{
+							"include": "#contentB"
+						}
+					]
+				},
+				{
+					"name": "meta.embedded.block.effect.vns",
+					"begin": "\\$",
+					"end": "\\$",
+					"beginCaptures": {
+						"0": {
+							"name": "punctuation.definition.keyword.effectstart.vns"
+						}
+					},
+					"endCaptures": {
+						"0": {
+							"name": "punctuation.definition.keyword.effectend.vns"
+						}
+					},
+					"patterns": [
+						{
+							"include": "#effect"
+						}
+					]
+				}
+			]
+		},
+		"contentA": {
+			"patterns": [
+				{
+					"name": "string.regexp.contenta.vns",
+					"match": ".+?"
+				}
+			]
+		},
+		"contentB": {
+			"patterns": [
+				{
+					"name": "string.regexp.contentb.vns",
+					"match": ".+?"
+				}
+			]
+		},
+		"effect": {
+			"patterns": [
+				{
+					"name": "entity.name.class.identifier.vns",
+					"match": "[a-zA-Z]+?(?=:)"
+				},
+				{
+					"name": "keyword.operator.separator.colon.vns",
+					"match": ":"
+				},
+				{
+					"name": "string.regexp.etext.vns",
+					"match": "(?<=:).+(?=\\$)"
 				}
 			]
 		}

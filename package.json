@@ -2,18 +2,15 @@
     "name": "arcaea-vns-support",
     "displayName": "Arcaea Visual Novel Script Support",
     "description": "Visual Studio Code's extension for arcaea visual novel script (.vns) file's reading and editing",
-    "version": "0.0.7",
+    "version": "0.0.8",
     "license": "MIT",
     "publisher": "RichadoWonosas",
     "repository": "github:RichadoWonosas/arcaea-vns-support",
     "engines": {
-        "vscode": "^1.69.0"
+        "vscode": "^1.75.0"
     },
     "categories": [
         "Other"
-    ],
-    "activationEvents": [
-        "onLanguage:arcaea-visualnovel"
     ],
     "main": "./client/out/extension",
     "contributes": {

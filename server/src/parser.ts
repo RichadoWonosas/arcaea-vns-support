@@ -112,10 +112,6 @@ class VNSParser extends CstParser {
         this.CONSUME(vnsToken.unloadtextures);
     });
 
-    public endlineCommand = this.RULE("endlineCommand", () => {
-        this.CONSUME(vnsToken.endline);
-    });
-
     public vns = this.RULE("vns", () => {
         this.MANY_SEP({
             DEF: () => {
@@ -135,15 +131,8 @@ class VNSParser extends CstParser {
                     { ALT: () => this.SUBRULE(this.autoCommand) },
                 ]);
             },
-            SEP: vnsToken.endline
+            SEP: vnsToken.endline,
         });
-        // this.OPTION(() => {
-        //     this.MANY1(() => {
-        //         this.OR1([
-        //             { ALT: () => this.CONSUME(vnsToken.endline) },
-        //         ]);
-        //     });
-        // });
     });
 }
 

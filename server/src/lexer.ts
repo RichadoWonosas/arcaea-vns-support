@@ -4,7 +4,7 @@ import { createToken, Lexer } from "chevrotain";
 const stringContent = createToken({ name: "String", pattern: /"([^"]|\n|\\")*[^\\]"|""/, line_breaks: true });
 const numberContent = createToken({ name: "Number", pattern: /-?[0-9]+(\.[0-9]+)?/ });
 
-const endline = createToken({ name: "Endline", pattern: /(\r|\n|\r\n)+/, line_breaks: true });
+const endline = createToken({ name: "Endline", pattern: /(\s*(\r|\n|\r\n))+/, line_breaks: true });
 const space = createToken({ name: "Space", pattern: /\s+/, group: Lexer.SKIPPED });
 const leftBrace = createToken({ name: "LeftBrace", pattern: /\(/, label: "(" });
 const rightBrace = createToken({ name: "RightBrace", pattern: /\)/, label: ")" });
@@ -19,9 +19,9 @@ const move = createToken({ name: "Move", pattern: /move/ });
 const play = createToken({ name: "Play", pattern: /play/ });
 const stop = createToken({ name: "Stop", pattern: /stop/ });
 const volume = createToken({ name: "Volume", pattern: /volume/ });
-const say = createToken({ name: "Say", pattern: /say/ });
+const say = createToken({ name: "Say", pattern: /say(_legacy)?/ });
 const wait = createToken({ name: "Wait", pattern: /wait/ });
-const auto = createToken({ name: "Auto", pattern: /auto/ });
+const auto = createToken({ name: "Auto", pattern: /auto(play_legacy)?/ });
 const hidetextbox = createToken({ name: "HideTextbox", pattern: /hidetextbox/ });
 const unloadtextures = createToken({ name: "UnloadTextures", pattern: /unload_textures/ });
 

@@ -54,6 +54,11 @@
         "body": "say \"${1:contents}\"",
         "description": "Print contents onto the textbox"
     },
+    "SayLegacy": {
+        "prefix": "say_legacy",
+        "body": "say_legacy \"${1:contents}\"",
+        "description": "Print contents onto the textbox (legacy)"
+    },
     "Wait": {
         "prefix": "wait",
         "body": "wait ${1:delay} ${2:clearText}",
@@ -63,6 +68,11 @@
         "prefix": "auto",
         "body": "auto ${1:autoPlayTime}",
         "description": "Autoplay the script"
+    },
+    "AutoLegacy": {
+        "prefix": "autoplay_legacy",
+        "body": "autoplay_legacy ${1:autoPlayTime}",
+        "description": "Autoplay the script (legacy)"
     },
     "HideTextbox": {
         "prefix": "hidetextbox",

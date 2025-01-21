@@ -6,6 +6,11 @@ All notable changes to the "arcaea-vns-syntax" extension will be documented in t
 
 - Hover infos -- Coming up in version 0.1.0
 
+## [0.0.8] - 2025-01-21
+
+- Added 2 more functions of Arcaea 6.0
+- Added highlight to string control patterns
+
 ## [0.0.7] - 2025-01-03
 
 - Updated syntax to Arcaea 6.0
@@ -22,41 +27,24 @@ All notable changes to the "arcaea-vns-syntax" extension will be documented in t
 
 ## [0.0.5] - 2022-07-31
 
-### Added
-
-- Parse result stroage, preparing for hover infos
-
-### Fixed
-
-- Bug about creating a new .vns file
-- "-outin" highlighting problem
+- Added parse result stroage, preparing for hover infos
+- Fixed the bug about creating a new .vns file
+- Fixed "-outin" highlighting problem
 
 ## [0.0.4] - 2022-07-30
 
-### Fixed
-
-- Bug about show command that do not have a fade function
+- Fixed bug about show command that do not have a fade function
 
 ## [0.0.3] - 2022-07-30
 
-### Added
-
-- Loop start/end point parsing and inspection
-
-### Changed
-
+- Added loop start/end point parsing and inspection
 - Adjusted severity of present errors
 - Adjusted file usage check: repetitions now show warning
 
 ## [0.0.2] - 2022-07-30
 
-### Added
-
-- File usage check for image and music
-
-### Fixed
-
-- Value check: only the first command of each kind were checked
+- Added file usage check for image and music
+- Fixed value check: only the first command of each kind were checked
 
 ## [0.0.1] - 2022-07-29
 
